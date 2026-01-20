@@ -1,0 +1,33 @@
+import os
+import pyfabricops as pf
+
+pf.set_auth_provider('oauth') 
+pf.setup_logging(format_style='minimal')  
+
+pf.export_semantic_model(
+    'AG Datas [Embedded]',
+    'AG - Base Lojas',
+    '.',
+)
+
+pf.export_report(
+    'Suporte de Lojas',
+    'Indicador Loja',
+    '.',
+)
+
+pbir_path = './Indicador Loja.Report/definition.pbir'
+if os.path.exists(pbir_path):
+    with open(pbir_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    target = 'initial catalog=' + chr(92) + chr(34) + 'AG - Base Lojas' + chr(92) + chr(34)
+    content = content.replace(target, 'initial catalog=AG - Base Lojas')
+    with open(pbir_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+dataset_path = os.path.join(os.getcwd(), 'DataSet')
+
+pf.convert_report_definition_to_by_path(
+    './Indicador Loja.Report',
+    dataset_path,
+)
